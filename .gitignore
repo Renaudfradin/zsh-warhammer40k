@@ -1,0 +1,17 @@
+# Local overrides (not committed)
+config/local.zsh
+
+# Backup files from install
+*.pre-imperial.bak
+*.bak
+
+# macOS
+.DS_Store
+
+# Editor
+*.swp
+*.swo
+*~
+
+# Temp
+*.tmp

@@ -1,0 +1,14 @@
+╔══════════════════════════════════╗
+║ IMPERIAL COMMAND TERMINAL        ║
+║ Machine Spirit : ONLINE          ║
+║ Access Level : MAGOS             ║
+╚══════════════════════════════════╝
+
+ "The Machine Spirit awakens. Praise the Omnissiah."
+
+ ⚙ magos  ⚜ battlecruiser-retribution  📂 ~/sector/mars-forge  ☀ 02 Jul 2026 14:09  ⚡ 0.42
+
+ 🛡 main ↑1  📦 zsh-warhammer40k  ⚡ py 3.12  ⬢ 22  🦀 1.78  🧬 ✚2 ~1  ☢ 87%  ⌛ 42ms  🛰 prod  🐳 default  ☁ imperial
+
+╭─⚜ ~/sector/mars-forge/zsh-warhammer40k
+╰─⚜ git status
