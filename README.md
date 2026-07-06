@@ -5,17 +5,27 @@
 A premium ZSH configuration inspired by the **Imperium of Man** — designed to feel like the command console of a Tech-Priest from Mars or an Imperial Battleship.
 
 ```
-╔══════════════════════════════════╗
-║ IMPERIAL COMMAND TERMINAL        ║
-║ Machine Spirit : ONLINE          ║
-║ Access Level : MAGOS             ║
-╚══════════════════════════════════╝
+     ⚙⚙⚙  COGITATEUR EN ÉVEIL  ⚙⚙⚙
 
- "The Machine Spirit awakens. Praise the Omnissiah."
+╔══════════════════════════════════════╗
+║   IMPERIAL COMMAND TERMINAL          ║
+║   Adeptus Mechanicus · Mars          ║
+╠══════════════════════════════════════╣
+║ Machine Spirit : ONLINE              ║
+║ Access Level   : MAGOS               ║
+╚══════════════════════════════════════╝
 
- ⚙ magos  ⚜ battlecruiser-retribution  📂 ~/sector/mars-forge  ☀ 02 Jul 2026 14:09  ⚡ 0.42
+  ☩ Litanie d'Éveil ☩
+  ─────────────────────────────────
+  Ô Esprit de la Machine, ouvre tes circuits sacrés.
+  Que tes rouages s'animent sous la volonté de l'Omnimessie.
+  ...
+  ☩  GLOIRE À L'OMNIMESSIE  ☩
+  ☩  GLORY TO THE OMNISSIAH  ☩
 
- 🛡 main ↑1  📦 zsh-warhammer40k  ⚡ py 3.12  ⬢ 22  🦀 1.78  🧬 ✚2 ~1  ☢ 87%  ⌛ 42ms  🛰 prod  🐳 default  ☁ imperial
+ ⚙ magos  ⚜ battlecruiser  ☩ ~/sector/mars-forge  ☩ 02 Jul 2026  ⌛ 14:09
+
+ 🛡 main ↑1  ⚡ py 3.12  ⬢ 22  🦀 1.78  🧬 ✚2 ~1  ☢ 87%  🛰 prod  🐳 default
 
 ╭─⚜ ~/sector/mars-forge/zsh-warhammer40k
 ╰─⚜
@@ -33,27 +43,58 @@ A premium ZSH configuration inspired by the **Imperium of Man** — designed to 
 | **Tools** | bat, eza, fzf, zoxide, thefuck, ripgrep, fd, tmux |
 | **Prompt** | Two-line Imperial status rail with git, languages, k8s, docker, cloud |
 | **Theme** | Custom color palette, Nerd Font icons, transient prompt |
+| **Startup** | Rituel d'éveil — litanies, prières à l'Omnissiah, Credo Imperialis |
 
 ### Visual Identity
 
 | Color | Hex | Role |
 |-------|-----|------|
-| Background | `#0b0b0b` | Terminal base |
-| Foreground | `#d8d0b0` | Ivory parchment text |
-| Gold | `#bfa35f` | Accents, clean git, cursor |
-| Red | `#a61d24` | Modified files, alerts |
-| Brass | `#8f6b32` | Borders, secondary accents |
+| Background | `#0b0b0b` | Void black — cathedral darkness |
+| Foreground | `#d8d0b0` | Parchment ivory |
+| Gold | `#bfa35f` | Imperial gold — aquila & seals |
+| Sacred Gold | `#ffd700` | Throne gold — litanies & prompt |
+| Red | `#a61d24` | Blood red — alerts |
+| Mechanicus Red | `#9b111e` | Tech-Priest robe crimson |
+| Mars Red | `#8b0000` | Martian forge |
+| Wax Seal | `#cc2200` | Purity seal red |
+| Brass | `#8f6b32` | Cogitator trim |
+| Incense | `#c68642` | Ritual amber |
+| Cog Glow | `#e8a020` | Amber cogitator glow |
 | Plasma Blue | `#66b6ff` | K8s, cloud, info |
-| Gray | `#4f4f4f` | Dim segments, gunmetal |
+| Gray | `#4f4f4f` | Gunmetal ash |
 
 ### Git Status Colors
 
 | State | Color |
 |-------|-------|
-| Clean | Gold `#bfa35f` |
-| Modified | Red `#a61d24` |
+| Clean | Sacred Gold `#ffd700` |
+| Modified | Martian Red `#a61d24` |
 | Staged | Ivory `#d8d0b0` |
 | Conflicts | Dark Red `#6b1010` |
+
+### Rituel de démarrage
+
+À chaque ouverture de terminal, le **rituel d'éveil du cogitateur** s'affiche :
+
+1. **Bannière Adeptus Mechanicus** — statut de l'Esprit de la Machine, niveau d'accès
+2. **Litane complète aléatoire** — parmi 8 litanie sacrées (Éveil, Mise à Feu, Réparation, Purification, Bolter, Tech-Prêtre, Cantique Binaire, Grande Litanie)
+3. **GLOIRE À L'OMNIMESSIE** — invocation bilingue
+4. **Credo Imperialis** — citation aléatoire du lore 40k
+5. **Confirmation** — le terminal est consacré et prêt
+
+Commandes pour rejouer le rituel :
+
+```bash
+banner      # Rituel complet
+eveil       # Idem (alias FR)
+omnissiah   # Litane + glorification
+litany      # Litane seule
+priere      # Litane seule (alias FR)
+gloire      # Gloire à l'Omnissiah
+creed       # Citation Imperialis
+```
+
+Désactiver le rituel : `export IMPERIAL_BANNER=0` dans `config/local.zsh`
 
 ---
 
@@ -247,7 +288,9 @@ zsh-warhammer40k/
 │   └── syntax-highlighting.zsh  # Fast-syntax-highlighting colors
 ├── assets/ascii/
 │   ├── terminal-mockup.txt      # ASCII preview
-│   └── motd-quotes.txt          # Imperial quotes
+│   ├── terminal-mockup.txt      # ASCII preview
+│   ├── motd-quotes.txt          # Imperial quotes (Credo)
+│   └── litanies.txt             # Machine Spirit prayers (FR/EN)
 └── tmux/
     └── imperial.tmux.conf       # Matching tmux theme
 ```
@@ -294,12 +337,14 @@ zsh-warhammer40k/
 | `machine_spirit` | Machine Spirit diagnostics |
 | `imperial_status` | Full cogitator dossier |
 | `access_level` | Show clearance (INITIATE / MAGOS / PRIMARCH) |
-| `creed` | Random Imperial quote |
+| `creed` | Random Imperial quote (Credo) |
+| `litany` / `priere` | Machine Spirit litany (random prayer) |
+| `omnissiah` / `gloire` | Litany + Glory to the Omnissiah |
 | `servo_skull <url>` | HTTP health probe |
 | `rite_of_repair` | Themed `thefuck` wrapper |
 | `sector <path>` | Navigate and list directory |
 | `exterminatus [git\|docker]` | Guarded destructive purge |
-| `banner` | Re-display welcome banner |
+| `banner` / `eveil` | Re-display full awakening ritual |
 
 ### Themed Aliases
 
@@ -312,7 +357,8 @@ zsh-warhammer40k/
 | `sanctify` | bat | Scripture viewer |
 | `reliquary` | eza -la | Sacred archives |
 | `warp` | z | Zoxide jump |
-| `litany` | history | Prayer log |
+| `chronicle` | history | Command chronicle |
+| `litany` | imperial_litany | Machine Spirit prayer |
 | `by_the_throne` | thefuck | Rite of repair |
 
 ### Key Bindings
@@ -424,6 +470,25 @@ Disable the welcome banner and ritual spinner:
 ```bash
 export IMPERIAL_BANNER=0
 export IMPERIAL_RITUAL_SPINNER=0
+```
+
+### `(` or other characters appear doubled
+
+Usually caused by one of these:
+
+1. **Terminal auto-pair brackets** (Ghostty, WezTerm, Cursor) + shell input — disable "auto close brackets" in your terminal settings
+2. **Duplicate fzf key bindings** — fixed in config (OMZ fzf plugin removed, custom fzf in `tools.zsh` only)
+3. **Ritual spinner `\r` overwrite** — fixed in `functions.zsh`
+
+After updating, run `reload`. If the issue persists, check your terminal:
+
+```bash
+# Ghostty: disable in ~/.config/ghostty/config
+# cursor-option-as-alt = false
+
+# Test in clean zsh (no config)
+zsh -f
+# Type ( — if no doubling, the issue is in config or terminal
 ```
 
 ### Reload configuration

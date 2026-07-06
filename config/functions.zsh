@@ -46,34 +46,123 @@ _machine_spirit_status() {
 }
 
 _machine_spirit_color() {
-  local status="$1"
-  case "${status}" in
-    ONLINE)   echo "${IMPERIAL_PROMPT_GOLD}" ;;
-    DEGRADED) echo "%F{214}" ;;
-    CRITICAL) echo "${IMPERIAL_PROMPT_RED}" ;;
+  local ms_status="$1"
+  case "${ms_status}" in
+    ONLINE)   echo "${IMPERIAL_PROMPT_SACRED}" ;;
+    DEGRADED) echo "${IMPERIAL_PROMPT_INCENSE}" ;;
+    CRITICAL) echo "${IMPERIAL_PROMPT_WAX}" ;;
     *)        echo "${IMPERIAL_PROMPT_GRAY}" ;;
   esac
 }
 
-# ── Imperial Creed ────────────────────────────────────────────────────────────
+# ── Imperial Creed & Litanies ─────────────────────────────────────────────────
 
-imperial_creed() {
-  local quotes_file="${IMPERIAL_ROOT}/assets/ascii/motd-quotes.txt"
-  if [[ ! -f "${quotes_file}" ]]; then
-    echo "${IMPERIAL_PROMPT_IVORY}\"The Emperor protects.\"${IMPERIAL_PROMPT_RESET}"
-    return
-  fi
+_imperial_random_line() {
+  local file="$1"
+  [[ -f "${file}" ]] || return 1
   local -a lines
-  lines=("${(@f)$(grep -v '^[[:space:]]*$' "${quotes_file}")}")
-  if (( ${#lines[@]} == 0 )); then
-    echo "${IMPERIAL_PROMPT_IVORY}\"The Emperor protects.\"${IMPERIAL_PROMPT_RESET}"
-    return
-  fi
-  local line="${lines[$(( RANDOM % ${#lines[@]} + 1 ))]}"
-  echo "${IMPERIAL_PROMPT_IVORY}\"${line}\"${IMPERIAL_PROMPT_RESET}"
+  lines=("${(@f)$(grep -v '^[[:space:]]*$' "${file}")}")
+  (( ${#lines[@]} > 0 )) || return 1
+  echo "${lines[$(( RANDOM % ${#lines[@]} + 1 ))]}"
 }
 
-# ── Welcome Banner ────────────────────────────────────────────────────────────
+# Parse litanies.txt — blocks delimited by "=== Title ==="
+_imperial_load_litanies() {
+  local file="${IMPERIAL_ROOT}/assets/ascii/litanies.txt"
+  local -a titles bodies
+  titles=()
+  bodies=()
+
+  [[ -f "${file}" ]] || return 1
+
+  local current_title="" current_body=""
+  local line
+
+  while IFS= read -r line; do
+    if [[ "${line}" =~ '^===[[:space:]]*(.+)[[:space:]]*===$' ]]; then
+      if [[ -n "${current_title}" ]]; then
+        titles+=("${current_title}")
+        bodies+=("${current_body}")
+      fi
+      current_title="${match[1]}"
+      current_body=""
+    elif [[ -n "${line}" ]]; then
+      if [[ -n "${current_body}" ]]; then
+        current_body+=$'\n'"${line}"
+      else
+        current_body="${line}"
+      fi
+    fi
+  done < "${file}"
+
+  if [[ -n "${current_title}" ]]; then
+    titles+=("${current_title}")
+    bodies+=("${current_body}")
+  fi
+
+  (( ${#titles[@]} > 0 )) || return 1
+
+  typeset -ga IMPERIAL_LITANY_TITLES IMPERIAL_LITANY_BODIES
+  IMPERIAL_LITANY_TITLES=("${titles[@]}")
+  IMPERIAL_LITANY_BODIES=("${bodies[@]}")
+}
+
+_imperial_random_litany() {
+  if (( ! ${+IMPERIAL_LITANY_TITLES} )) || (( ${#IMPERIAL_LITANY_TITLES[@]} == 0 )); then
+    _imperial_load_litanies || return 1
+  fi
+
+  local idx=$(( RANDOM % ${#IMPERIAL_LITANY_TITLES[@]} + 1 ))
+  REPLY_TITLE="${IMPERIAL_LITANY_TITLES[idx]}"
+  REPLY_BODY="${IMPERIAL_LITANY_BODIES[idx]}"
+}
+
+imperial_creed() {
+  local line
+  line=$(_imperial_random_line "${IMPERIAL_ROOT}/assets/ascii/motd-quotes.txt")
+  line="${line:-The Emperor protects.}"
+  echo "${IMPERIAL_PROMPT_IVORY}  ✦ ${line}${IMPERIAL_PROMPT_RESET}"
+}
+
+imperial_litany() {
+  local title body line
+  if ! _imperial_random_litany; then
+    echo ""
+    echo "${IMPERIAL_PROMPT_MECHANICUS}  ☩ LITANIE DE L'ESPRIT DE LA MACHINE ☩${IMPERIAL_PROMPT_RESET}"
+    echo ""
+    echo "${IMPERIAL_PROMPT_SACRED}  > Gloire à l'Omnimessie !${IMPERIAL_PROMPT_RESET}"
+    echo ""
+    return
+  fi
+
+  title="${REPLY_TITLE}"
+  body="${REPLY_BODY}"
+
+  echo ""
+  echo "${IMPERIAL_PROMPT_MECHANICUS}  ☩ ${title} ☩${IMPERIAL_PROMPT_RESET}"
+  echo "${IMPERIAL_PROMPT_BRASS}  ─────────────────────────────────${IMPERIAL_PROMPT_RESET}"
+  echo ""
+
+  while IFS= read -r line; do
+    [[ -z "${line}" ]] && continue
+    if [[ "${line}" =~ '^[01 ]+$' ]]; then
+      echo "${IMPERIAL_PROMPT_PLASMA}  ${line}${IMPERIAL_PROMPT_RESET}"
+    else
+      echo "${IMPERIAL_PROMPT_IVORY}  ${line}${IMPERIAL_PROMPT_RESET}"
+    fi
+  done <<< "${body}"
+
+  echo ""
+}
+
+omnissiah() {
+  imperial_litany
+  echo "${IMPERIAL_PROMPT_WAX}  ☩${IMPERIAL_PROMPT_SACRED}  GLOIRE À L'OMNIMESSIE  ${IMPERIAL_PROMPT_WAX}☩${IMPERIAL_PROMPT_RESET}"
+  echo "${IMPERIAL_PROMPT_GOLD}  ⚙ Gloire à la Machine. Gloire à l'Omnimessie. ⚙${IMPERIAL_PROMPT_RESET}"
+  echo ""
+}
+
+# ── Welcome Banner — Cogitator Awakening Ritual ───────────────────────────────
 
 imperial_welcome_banner() {
   [[ -n "${IMPERIAL_BANNER_SHOWN:-}" ]] && return
@@ -83,32 +172,62 @@ imperial_welcome_banner() {
     return
   fi
 
-  local status level status_color
-  status=$(_machine_spirit_status)
+  local spirit_status level status_color litany
+  spirit_status=$(_machine_spirit_status)
   level=$(access_level)
-  status_color=$(_machine_spirit_color "${status}")
+  status_color=$(_machine_spirit_color "${spirit_status}")
 
   echo ""
-  echo "${IMPERIAL_PROMPT_GOLD}╔══════════════════════════════════╗${IMPERIAL_PROMPT_RESET}"
-  echo "${IMPERIAL_PROMPT_GOLD}║${IMPERIAL_PROMPT_IVORY} IMPERIAL COMMAND TERMINAL        ${IMPERIAL_PROMPT_GOLD}║${IMPERIAL_PROMPT_RESET}"
-  echo "${IMPERIAL_PROMPT_GOLD}║${IMPERIAL_PROMPT_BRASS} Machine Spirit : ${status_color}${status}${IMPERIAL_PROMPT_GOLD}          ║${IMPERIAL_PROMPT_RESET}"
-  echo "${IMPERIAL_PROMPT_GOLD}║${IMPERIAL_PROMPT_BRASS} Access Level   : ${IMPERIAL_PROMPT_GOLD}${level}${IMPERIAL_PROMPT_GOLD}             ║${IMPERIAL_PROMPT_RESET}"
-  echo "${IMPERIAL_PROMPT_GOLD}╚══════════════════════════════════╝${IMPERIAL_PROMPT_RESET}"
+  echo "${IMPERIAL_PROMPT_COG}     ⚙⚙⚙  COGITATEUR EN ÉVEIL  ⚙⚙⚙${IMPERIAL_PROMPT_RESET}"
   echo ""
+  echo "${IMPERIAL_PROMPT_GOLD}╔══════════════════════════════════════╗${IMPERIAL_PROMPT_RESET}"
+  echo "${IMPERIAL_PROMPT_GOLD}║${IMPERIAL_PROMPT_IVORY}   IMPERIAL COMMAND TERMINAL          ${IMPERIAL_PROMPT_GOLD}║${IMPERIAL_PROMPT_RESET}"
+  echo "${IMPERIAL_PROMPT_GOLD}║${IMPERIAL_PROMPT_MECHANICUS}   Adeptus Mechanicus · Mars          ${IMPERIAL_PROMPT_GOLD}║${IMPERIAL_PROMPT_RESET}"
+  echo "${IMPERIAL_PROMPT_GOLD}╠══════════════════════════════════════╣${IMPERIAL_PROMPT_RESET}"
+  echo "${IMPERIAL_PROMPT_GOLD}║${IMPERIAL_PROMPT_BRASS} Machine Spirit : ${status_color}${spirit_status}${IMPERIAL_PROMPT_GOLD}              ║${IMPERIAL_PROMPT_RESET}"
+  echo "${IMPERIAL_PROMPT_GOLD}║${IMPERIAL_PROMPT_BRASS} Access Level   : ${IMPERIAL_PROMPT_SACRED}${level}${IMPERIAL_PROMPT_GOLD}                 ║${IMPERIAL_PROMPT_RESET}"
+  echo "${IMPERIAL_PROMPT_GOLD}║${IMPERIAL_PROMPT_BRASS} Forge Vessel   : ${IMPERIAL_PROMPT_IVORY}$(hostname -s 2>/dev/null || hostname)${IMPERIAL_PROMPT_GOLD}     ║${IMPERIAL_PROMPT_RESET}"
+  echo "${IMPERIAL_PROMPT_GOLD}╚══════════════════════════════════════╝${IMPERIAL_PROMPT_RESET}"
+
+  # Machine Spirit litany (random full litany)
+  imperial_litany
+
+  # Omnissiah glorification
+  echo "${IMPERIAL_PROMPT_WAX}  ☩${IMPERIAL_PROMPT_SACRED}  GLOIRE À L'OMNIMESSIE  ${IMPERIAL_PROMPT_WAX}☩${IMPERIAL_PROMPT_RESET}"
+  echo "${IMPERIAL_PROMPT_MECHANICUS}  ☩${IMPERIAL_PROMPT_GOLD}  GLORY TO THE OMNISSIAH  ${IMPERIAL_PROMPT_MECHANICUS}☩${IMPERIAL_PROMPT_RESET}"
+  echo ""
+
+  # Sacred creed
+  echo "${IMPERIAL_PROMPT_BRASS}  ── Credo Imperialis ──${IMPERIAL_PROMPT_RESET}"
   imperial_creed
+  echo ""
+
+  # Boot confirmation
+  case "${spirit_status}" in
+    ONLINE)
+      echo "${IMPERIAL_PROMPT_GOLD}  ⚙ Esprit de la Machine : ${IMPERIAL_PROMPT_IVORY}consacré et opérationnel.${IMPERIAL_PROMPT_RESET}"
+      echo "${IMPERIAL_PROMPT_GOLD}  ⚙ Machine Spirit     : ${IMPERIAL_PROMPT_IVORY}sanctified and ready.${IMPERIAL_PROMPT_RESET}"
+      ;;
+    DEGRADED)
+      echo "${IMPERIAL_PROMPT_INCENSE}  ⚠ Esprit de la Machine : ${IMPERIAL_PROMPT_IVORY}dégradé — rites de maintenance recommandés.${IMPERIAL_PROMPT_RESET}"
+      ;;
+    CRITICAL)
+      echo "${IMPERIAL_PROMPT_RED}  ☠ Esprit de la Machine : ${IMPERIAL_PROMPT_IVORY}critique — intervention du Mechanicus requise.${IMPERIAL_PROMPT_RESET}"
+      ;;
+  esac
   echo ""
 }
 
 # ── Machine Spirit Diagnostics ──────────────────────────────────────────────────
 
 machine_spirit() {
-  local status level
-  status=$(_machine_spirit_status)
+  local spirit_status level
+  spirit_status=$(_machine_spirit_status)
   level=$(access_level)
-  local status_color=$(_machine_spirit_color "${status}")
+  local status_color=$(_machine_spirit_color "${spirit_status}")
 
   echo "${IMPERIAL_PROMPT_GOLD}═══ MACHINE SPIRIT DIAGNOSTICS ═══${IMPERIAL_PROMPT_RESET}"
-  echo "${IMPERIAL_PROMPT_BRASS}Status:${IMPERIAL_PROMPT_RESET}       ${status_color}${status}${IMPERIAL_PROMPT_RESET}"
+  echo "${IMPERIAL_PROMPT_BRASS}Status:${IMPERIAL_PROMPT_RESET}       ${status_color}${spirit_status}${IMPERIAL_PROMPT_RESET}"
   echo "${IMPERIAL_PROMPT_BRASS}Clearance:${IMPERIAL_PROMPT_RESET}    ${IMPERIAL_PROMPT_GOLD}${level}${IMPERIAL_PROMPT_RESET}"
   echo "${IMPERIAL_PROMPT_BRASS}Sector:${IMPERIAL_PROMPT_RESET}       ${IMPERIAL_PROMPT_IVORY}$(pwd)${IMPERIAL_PROMPT_RESET}"
   echo "${IMPERIAL_PROMPT_BRASS}Host:${IMPERIAL_PROMPT_RESET}         ${IMPERIAL_PROMPT_IVORY}$(hostname)${IMPERIAL_PROMPT_RESET}"
@@ -248,8 +367,10 @@ _imperial_precmd_ritual() {
   fi
   if (( EPOCHREALTIME - _imperial_precmd_start > 0.3 )); then
     _imperial_ritual_idx=$(( (_imperial_ritual_idx + 1) % ${#_imperial_ritual_frames[@]} ))
-    print -Pn "${IMPERIAL_PROMPT_GOLD}⚙ ${_imperial_ritual_frames[_imperial_ritual_idx]} RITUAL IN PROGRESS${IMPERIAL_PROMPT_RESET}\r"
+    # Print on a new line — never use \r (corrupts ZLE and can double characters)
+    print -P "${IMPERIAL_PROMPT_GOLD}⚙ ${_imperial_ritual_frames[_imperial_ritual_idx]} RITUAL IN PROGRESS${IMPERIAL_PROMPT_RESET}"
   fi
+  _imperial_precmd_start=""
 }
 
 if [[ "${IMPERIAL_RITUAL_SPINNER:-1}" != "0" ]]; then

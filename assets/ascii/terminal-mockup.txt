@@ -1,14 +1,30 @@
-╔══════════════════════════════════╗
-║ IMPERIAL COMMAND TERMINAL        ║
-║ Machine Spirit : ONLINE          ║
-║ Access Level : MAGOS             ║
-╚══════════════════════════════════╝
+     ⚙⚙⚙  COGITATEUR EN ÉVEIL  ⚙⚙⚙
 
- "The Machine Spirit awakens. Praise the Omnissiah."
+╔══════════════════════════════════════╗
+║   IMPERIAL COMMAND TERMINAL          ║
+║   Adeptus Mechanicus · Mars          ║
+╠══════════════════════════════════════╣
+║ Machine Spirit : ONLINE              ║
+║ Access Level   : MAGOS               ║
+║ Forge Vessel   : battlecruiser       ║
+╚══════════════════════════════════════╝
 
- ⚙ magos  ⚜ battlecruiser-retribution  📂 ~/sector/mars-forge  ☀ 02 Jul 2026 14:09  ⚡ 0.42
+  ☩ LITANIE DE L'ESPRIT DE LA MACHINE ☩
 
- 🛡 main ↑1  📦 zsh-warhammer40k  ⚡ py 3.12  ⬢ 22  🦀 1.78  🧬 ✚2 ~1  ☢ 87%  ⌛ 42ms  🛰 prod  🐳 default  ☁ imperial
+  > Gloire à l'Omnissiah !
+
+  ☩  GLOIRE À L'OMNISSIAH  ☩
+  ☩  GLORY TO THE OMNISSIAH  ☩
+
+  ── Credo Imperialis ──
+  ✦ The Machine Spirit awakens. Praise the Omnissiah.
+
+  ⚙ Esprit de la Machine : consacré et opérationnel.
+  ⚙ Machine Spirit     : sanctified and ready.
+
+ ⚙ magos  ⚜ battlecruiser  ☩ ~/sector/mars-forge  ☩ 02 Jul 2026  ⌛ 14:09  ⚡ 0.42
+
+ 🛡 main ↑1  ⚡ py 3.12  ⬢ 22  🦀 1.78  🧬 ✚2 ~1  ☢ 87%  ⌛ 42ms  🛰 prod  🐳 default  ☁ imperial
 
 ╭─⚜ ~/sector/mars-forge/zsh-warhammer40k
 ╰─⚜ git status

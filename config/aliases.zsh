@@ -13,8 +13,8 @@ alias astartes-drop='zi'
 
 alias vox='ping'
 alias voxcast='ping -c 4'
-alias litany='history'
-alias litany-grep='history | grep'
+alias chronicle='history'
+alias chronicle-grep='history | grep'
 
 # ── Git — Imperial Archive Protocols ──────────────────────────────────────────
 
@@ -63,6 +63,9 @@ alias annihilate='rm -i'
 alias dossier='imperial_status'
 alias clearance='access_level'
 alias creed='imperial_creed'
+alias litany='imperial_litany'
+alias priere='imperial_litany'
+# Note: omnissiah and gloire are functions — aliases defined in imperial-banner.zsh
 
 # ── tmux ──────────────────────────────────────────────────────────────────────
 

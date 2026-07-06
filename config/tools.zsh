@@ -20,7 +20,7 @@ fi
 # ── bat — Holy Scripture Viewer ──────────────────────────────────────────────
 
 if [[ -n "${IMPERIAL_BAT:-}" ]]; then
-  export BAT_THEME="TwoDark"
+  export BAT_THEME="ansi"
   export BAT_STYLE="numbers,changes,header"
   alias cat="${IMPERIAL_BAT}"
   alias sanctify="${IMPERIAL_BAT}"
@@ -65,9 +65,10 @@ if command -v fzf &>/dev/null; then
     --height 40%
     --layout=reverse
     --border=rounded
-    --color=bg+:#1a1a1a,bg:#0b0b0b,spinner:#bfa35f,hl:#a61d24
-    --color=fg:#d8d0b0,header:#bfa35f,info:#8f6b32,pointer:#bfa35f
-    --color=marker:#66b6ff,fg+:#d8d0b0,prompt:#bfa35f,hl+:#a61d24
+    --color=bg+:#1a1a1a,bg:#0b0b0b,spinner:#e8a020,hl:#a61d24
+    --color=fg:#d8d0b0,header:#ffd700,info:#8f6b32,pointer:#ffd700
+    --color=marker:#66b6ff,fg+:#d8d0b0,prompt:#9b111e,hl+:#cc2200
+    --color=border:#8f6b32,label:#bfa35f,query:#d8d0b0
   "
 
   export FZF_CTRL_T_OPTS="--preview 'if [[ -d {} ]]; then eza -T --level=1 --icons {}; elif [[ -f {} ]]; then ${IMPERIAL_BAT:-cat} --color=always {}; fi'"

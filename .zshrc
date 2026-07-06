@@ -34,7 +34,7 @@ plugins=(
   sudo
   zsh-autosuggestions
   zsh-history-substring-search
-  fzf
+  # fzf: custom integration in config/tools.zsh (avoids duplicate key bindings)
 )
 
 # Load colors before OMZ for early styling
@@ -62,6 +62,7 @@ fi
 for _imperial_module in \
   history \
   tools \
+  bindkeys \
   aliases \
   functions \
   imperial-banner; do
