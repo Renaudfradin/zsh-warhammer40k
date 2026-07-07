@@ -19,25 +19,7 @@ export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=238"
 export ZSH_AUTOSUGGEST_STRATEGY=(history completion)
 export ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=64
 
-# Flèche droite → accepte toute la suggestion (comportement classique)
-if (( ${+widgets[autosuggest-accept]} )); then
-  bindkey -M emacs '^[[C' autosuggest-accept
-  bindkey -M emacs '^[OC' autosuggest-accept
-  bindkey -M viins '^[[C' autosuggest-accept
-  bindkey -M viins '^[OC' autosuggest-accept
-  if [[ -n ${terminfo[kcuf]:-} ]]; then
-    bindkey -M emacs "${terminfo[kcuf]}" autosuggest-accept
-    bindkey -M viins "${terminfo[kcuf]}" autosuggest-accept
-  fi
-fi
-
-# History substring search bindings
-bindkey '^[[A' history-substring-search-up
-bindkey '^[[B' history-substring-search-down
-bindkey -M vicmd 'k' history-substring-search-up
-bindkey -M vicmd 'j' history-substring-search-down
-
-# Word navigation
+# Word navigation (Ctrl+arrows only — plain arrows keep default ZSH behavior)
 bindkey '^[[1;5C' forward-word    # Ctrl+Right
 bindkey '^[[1;5D' backward-word   # Ctrl+Left
 

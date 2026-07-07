@@ -152,10 +152,6 @@ install_plugins() {
   clone_if_missing \
     "https://github.com/zdharma-continuum/fast-syntax-highlighting.git" \
     "${ZSH_CUSTOM}/plugins/fast-syntax-highlighting"
-
-  clone_if_missing \
-    "https://github.com/zsh-users/zsh-history-substring-search.git" \
-    "${ZSH_CUSTOM}/plugins/zsh-history-substring-search"
 }
 
 # ── Nerd Font ─────────────────────────────────────────────────────────────────

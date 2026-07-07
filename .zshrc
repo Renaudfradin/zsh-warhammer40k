@@ -33,7 +33,6 @@ plugins=(
   tmux
   sudo
   zsh-autosuggestions
-  zsh-history-substring-search
   # fzf: custom integration in config/tools.zsh (avoids duplicate key bindings)
 )
 

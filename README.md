@@ -39,7 +39,7 @@ A premium ZSH configuration inspired by the **Imperium of Man** — designed to 
 |----------|---------|
 | **Shell** | ZSH + Oh My Zsh + Powerlevel10k |
 | **Style** | Adeptus Mechanicus / Imperial Navy / Gothic industrial |
-| **Plugins** | Autosuggestions, Fast Syntax Highlighting, History Substring Search, FZF |
+| **Plugins** | Autosuggestions, Fast Syntax Highlighting, FZF |
 | **Tools** | bat, eza, fzf, zoxide, thefuck, ripgrep, fd, tmux |
 | **Prompt** | Two-line Imperial status rail with git, languages, k8s, docker, cloud |
 | **Theme** | Custom color palette, Nerd Font icons, transient prompt |
@@ -368,7 +368,6 @@ zsh-warhammer40k/
 | `Ctrl+R` | FZF history search |
 | `Ctrl+T` | FZF file finder |
 | `Alt+C` | FZF directory jump |
-| `↑` / `↓` | History substring search |
 
 ---
 

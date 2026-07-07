@@ -121,48 +121,69 @@ imperial_creed() {
   local line
   line=$(_imperial_random_line "${IMPERIAL_ROOT}/assets/ascii/motd-quotes.txt")
   line="${line:-The Emperor protects.}"
-  echo "${IMPERIAL_PROMPT_IVORY}  ✦ ${line}${IMPERIAL_PROMPT_RESET}"
+  print -P "${IMPERIAL_PROMPT_IVORY}  ✦ ${line}${IMPERIAL_PROMPT_RESET}"
 }
 
 imperial_litany() {
   local title body line
   if ! _imperial_random_litany; then
-    echo ""
-    echo "${IMPERIAL_PROMPT_MECHANICUS}  ☩ LITANIE DE L'ESPRIT DE LA MACHINE ☩${IMPERIAL_PROMPT_RESET}"
-    echo ""
-    echo "${IMPERIAL_PROMPT_SACRED}  > Gloire à l'Omnimessie !${IMPERIAL_PROMPT_RESET}"
-    echo ""
+    print -P ""
+    print -P "${IMPERIAL_PROMPT_MECHANICUS}  ☩ LITANIE DE L'ESPRIT DE LA MACHINE ☩${IMPERIAL_PROMPT_RESET}"
+    print -P ""
+    print -P "${IMPERIAL_PROMPT_SACRED}  > Gloire à l'Omnimessie !${IMPERIAL_PROMPT_RESET}"
+    print -P ""
     return
   fi
 
   title="${REPLY_TITLE}"
   body="${REPLY_BODY}"
 
-  echo ""
-  echo "${IMPERIAL_PROMPT_MECHANICUS}  ☩ ${title} ☩${IMPERIAL_PROMPT_RESET}"
-  echo "${IMPERIAL_PROMPT_BRASS}  ─────────────────────────────────${IMPERIAL_PROMPT_RESET}"
-  echo ""
+  print -P ""
+  print -P "${IMPERIAL_PROMPT_MECHANICUS}  ☩ ${title} ☩${IMPERIAL_PROMPT_RESET}"
+  print -P "${IMPERIAL_PROMPT_BRASS}  ─────────────────────────────────${IMPERIAL_PROMPT_RESET}"
+  print -P ""
 
   while IFS= read -r line; do
     [[ -z "${line}" ]] && continue
     if [[ "${line}" =~ '^[01 ]+$' ]]; then
-      echo "${IMPERIAL_PROMPT_PLASMA}  ${line}${IMPERIAL_PROMPT_RESET}"
+      print -P "${IMPERIAL_PROMPT_PLASMA}  ${line}${IMPERIAL_PROMPT_RESET}"
     else
-      echo "${IMPERIAL_PROMPT_IVORY}  ${line}${IMPERIAL_PROMPT_RESET}"
+      print -P "${IMPERIAL_PROMPT_IVORY}  ${line}${IMPERIAL_PROMPT_RESET}"
     fi
   done <<< "${body}"
 
-  echo ""
+  print -P ""
 }
 
 omnissiah() {
   imperial_litany
-  echo "${IMPERIAL_PROMPT_WAX}  ☩${IMPERIAL_PROMPT_SACRED}  GLOIRE À L'OMNIMESSIE  ${IMPERIAL_PROMPT_WAX}☩${IMPERIAL_PROMPT_RESET}"
-  echo "${IMPERIAL_PROMPT_GOLD}  ⚙ Gloire à la Machine. Gloire à l'Omnimessie. ⚙${IMPERIAL_PROMPT_RESET}"
-  echo ""
+  print -P "${IMPERIAL_PROMPT_WAX}  ☩${IMPERIAL_PROMPT_SACRED}  GLOIRE À L'OMNIMESSIE  ${IMPERIAL_PROMPT_WAX}☩${IMPERIAL_PROMPT_RESET}"
+  print -P "${IMPERIAL_PROMPT_MECHANICUS}  ☩${IMPERIAL_PROMPT_GOLD}  GLORY TO THE OMNISSIAH  ${IMPERIAL_PROMPT_MECHANICUS}☩${IMPERIAL_PROMPT_RESET}"
+  print -P "${IMPERIAL_PROMPT_GOLD}  ⚙ Gloire à la Machine. Gloire à l'Omnimessie. ⚙${IMPERIAL_PROMPT_RESET}"
+  print -P ""
 }
 
 # ── Welcome Banner — Cogitator Awakening Ritual ───────────────────────────────
+
+# Inner width between ║ borders (re-source safe — no readonly)
+typeset -gi IMPERIAL_BOX_INNER_WIDTH=38
+
+_imperial_visible_width() {
+  local expanded stripped
+  expanded="$(print -P -- "$1")"
+  stripped="$(print -r -- "${expanded}" | command sed -E 's/\x1B\[[0-9;]*[[:alpha:]]//g')"
+  print -r -- ${#stripped}
+}
+
+_imperial_box_line() {
+  local content="$1" visible_len pad
+  visible_len="$(_imperial_visible_width "${content}")"
+  if (( visible_len > IMPERIAL_BOX_INNER_WIDTH )); then
+    visible_len=$IMPERIAL_BOX_INNER_WIDTH
+  fi
+  pad=$(( IMPERIAL_BOX_INNER_WIDTH - visible_len ))
+  print -P -- "${IMPERIAL_PROMPT_GOLD}║${content}${(l:pad:: :)}${IMPERIAL_PROMPT_GOLD}║${IMPERIAL_PROMPT_RESET}"
+}
 
 imperial_welcome_banner() {
   [[ -n "${IMPERIAL_BANNER_SHOWN:-}" ]] && return
@@ -177,45 +198,49 @@ imperial_welcome_banner() {
   level=$(access_level)
   status_color=$(_machine_spirit_color "${spirit_status}")
 
-  echo ""
-  echo "${IMPERIAL_PROMPT_COG}     ⚙⚙⚙  COGITATEUR EN ÉVEIL  ⚙⚙⚙${IMPERIAL_PROMPT_RESET}"
-  echo ""
-  echo "${IMPERIAL_PROMPT_GOLD}╔══════════════════════════════════════╗${IMPERIAL_PROMPT_RESET}"
-  echo "${IMPERIAL_PROMPT_GOLD}║${IMPERIAL_PROMPT_IVORY}   IMPERIAL COMMAND TERMINAL          ${IMPERIAL_PROMPT_GOLD}║${IMPERIAL_PROMPT_RESET}"
-  echo "${IMPERIAL_PROMPT_GOLD}║${IMPERIAL_PROMPT_MECHANICUS}   Adeptus Mechanicus · Mars          ${IMPERIAL_PROMPT_GOLD}║${IMPERIAL_PROMPT_RESET}"
-  echo "${IMPERIAL_PROMPT_GOLD}╠══════════════════════════════════════╣${IMPERIAL_PROMPT_RESET}"
-  echo "${IMPERIAL_PROMPT_GOLD}║${IMPERIAL_PROMPT_BRASS} Machine Spirit : ${status_color}${spirit_status}${IMPERIAL_PROMPT_GOLD}              ║${IMPERIAL_PROMPT_RESET}"
-  echo "${IMPERIAL_PROMPT_GOLD}║${IMPERIAL_PROMPT_BRASS} Access Level   : ${IMPERIAL_PROMPT_SACRED}${level}${IMPERIAL_PROMPT_GOLD}                 ║${IMPERIAL_PROMPT_RESET}"
-  echo "${IMPERIAL_PROMPT_GOLD}║${IMPERIAL_PROMPT_BRASS} Forge Vessel   : ${IMPERIAL_PROMPT_IVORY}$(hostname -s 2>/dev/null || hostname)${IMPERIAL_PROMPT_GOLD}     ║${IMPERIAL_PROMPT_RESET}"
-  echo "${IMPERIAL_PROMPT_GOLD}╚══════════════════════════════════════╝${IMPERIAL_PROMPT_RESET}"
+  local vessel
+  vessel="$(hostname -s 2>/dev/null || hostname)"
+  vessel="${vessel:0:$(( IMPERIAL_BOX_INNER_WIDTH - 18 ))}"
+
+  print -P ""
+  print -P "${IMPERIAL_PROMPT_COG}     ⚙⚙⚙  COGITATEUR EN ÉVEIL  ⚙⚙⚙${IMPERIAL_PROMPT_RESET}"
+  print -P ""
+  print -P "${IMPERIAL_PROMPT_GOLD}╔${(l:$IMPERIAL_BOX_INNER_WIDTH::═:)}╗${IMPERIAL_PROMPT_RESET}"
+  _imperial_box_line "${IMPERIAL_PROMPT_IVORY}   IMPERIAL COMMAND TERMINAL"
+  _imperial_box_line "${IMPERIAL_PROMPT_MECHANICUS}   Adeptus Mechanicus · Mars"
+  print -P "${IMPERIAL_PROMPT_GOLD}╠${(l:$IMPERIAL_BOX_INNER_WIDTH::═:)}╣${IMPERIAL_PROMPT_RESET}"
+  _imperial_box_line "${IMPERIAL_PROMPT_BRASS} Machine Spirit : ${status_color}${spirit_status}"
+  _imperial_box_line "${IMPERIAL_PROMPT_BRASS} Access Level   : ${IMPERIAL_PROMPT_SACRED}${level}"
+  _imperial_box_line "${IMPERIAL_PROMPT_BRASS} Forge Vessel   : ${IMPERIAL_PROMPT_IVORY}${vessel}"
+  print -P "${IMPERIAL_PROMPT_GOLD}╚${(l:$IMPERIAL_BOX_INNER_WIDTH::═:)}╝${IMPERIAL_PROMPT_RESET}"
 
   # Machine Spirit litany (random full litany)
   imperial_litany
 
   # Omnissiah glorification
-  echo "${IMPERIAL_PROMPT_WAX}  ☩${IMPERIAL_PROMPT_SACRED}  GLOIRE À L'OMNIMESSIE  ${IMPERIAL_PROMPT_WAX}☩${IMPERIAL_PROMPT_RESET}"
-  echo "${IMPERIAL_PROMPT_MECHANICUS}  ☩${IMPERIAL_PROMPT_GOLD}  GLORY TO THE OMNISSIAH  ${IMPERIAL_PROMPT_MECHANICUS}☩${IMPERIAL_PROMPT_RESET}"
-  echo ""
+  print -P "${IMPERIAL_PROMPT_WAX}  ☩${IMPERIAL_PROMPT_SACRED}  GLOIRE À L'OMNIMESSIE  ${IMPERIAL_PROMPT_WAX}☩${IMPERIAL_PROMPT_RESET}"
+  print -P "${IMPERIAL_PROMPT_MECHANICUS}  ☩${IMPERIAL_PROMPT_GOLD}  GLORY TO THE OMNISSIAH  ${IMPERIAL_PROMPT_MECHANICUS}☩${IMPERIAL_PROMPT_RESET}"
+  print -P ""
 
   # Sacred creed
-  echo "${IMPERIAL_PROMPT_BRASS}  ── Credo Imperialis ──${IMPERIAL_PROMPT_RESET}"
+  print -P "${IMPERIAL_PROMPT_BRASS}  ── Credo Imperialis ──${IMPERIAL_PROMPT_RESET}"
   imperial_creed
-  echo ""
+  print -P ""
 
   # Boot confirmation
   case "${spirit_status}" in
     ONLINE)
-      echo "${IMPERIAL_PROMPT_GOLD}  ⚙ Esprit de la Machine : ${IMPERIAL_PROMPT_IVORY}consacré et opérationnel.${IMPERIAL_PROMPT_RESET}"
-      echo "${IMPERIAL_PROMPT_GOLD}  ⚙ Machine Spirit     : ${IMPERIAL_PROMPT_IVORY}sanctified and ready.${IMPERIAL_PROMPT_RESET}"
+      print -P "${IMPERIAL_PROMPT_GOLD}  ⚙ Esprit de la Machine : ${IMPERIAL_PROMPT_IVORY}consacré et opérationnel.${IMPERIAL_PROMPT_RESET}"
+      print -P "${IMPERIAL_PROMPT_GOLD}  ⚙ Machine Spirit     : ${IMPERIAL_PROMPT_IVORY}sanctified and ready.${IMPERIAL_PROMPT_RESET}"
       ;;
     DEGRADED)
-      echo "${IMPERIAL_PROMPT_INCENSE}  ⚠ Esprit de la Machine : ${IMPERIAL_PROMPT_IVORY}dégradé — rites de maintenance recommandés.${IMPERIAL_PROMPT_RESET}"
+      print -P "${IMPERIAL_PROMPT_INCENSE}  ⚠ Esprit de la Machine : ${IMPERIAL_PROMPT_IVORY}dégradé — rites de maintenance recommandés.${IMPERIAL_PROMPT_RESET}"
       ;;
     CRITICAL)
-      echo "${IMPERIAL_PROMPT_RED}  ☠ Esprit de la Machine : ${IMPERIAL_PROMPT_IVORY}critique — intervention du Mechanicus requise.${IMPERIAL_PROMPT_RESET}"
+      print -P "${IMPERIAL_PROMPT_RED}  ☠ Esprit de la Machine : ${IMPERIAL_PROMPT_IVORY}critique — intervention du Mechanicus requise.${IMPERIAL_PROMPT_RESET}"
       ;;
   esac
-  echo ""
+  print -P ""
 }
 
 # ── Machine Spirit Diagnostics ──────────────────────────────────────────────────
@@ -351,6 +376,29 @@ exterminatus() {
   esac
 }
 
+# ── Ritual Feedback (unknown command / success) ─────────────────────────────────
+
+_imperial_cmd_ran=0
+
+command_not_found_handler() {
+  print -P ""
+  print -P "${IMPERIAL_PROMPT_RED}☠ Le rituel a échoué — incantation inconnue : ${IMPERIAL_PROMPT_IVORY}${1}${IMPERIAL_PROMPT_RESET}"
+  print -P "${IMPERIAL_PROMPT_WAX}☠ Ritual failed — unknown incantation: ${IMPERIAL_PROMPT_IVORY}${1}${IMPERIAL_PROMPT_RESET}"
+  print -P ""
+  return 127
+}
+
+_imperial_ritual_feedback_precmd() {
+  [[ "${IMPERIAL_RITUAL_FEEDBACK:-1}" == "0" ]] && return
+  [[ "${_imperial_cmd_ran}" -eq 0 ]] && return
+  _imperial_cmd_ran=0
+
+  local exit_code=$?
+  if (( exit_code == 0 )); then
+    print -P "${IMPERIAL_PROMPT_GOLD}⚙ Le rituel est accompli. ${IMPERIAL_PROMPT_BRASS}Ritual complete.${IMPERIAL_PROMPT_RESET}"
+  fi
+}
+
 # ── Ritual Spinner (slow precmd) ────────────────────────────────────────────────
 
 _imperial_ritual_frames=(⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏)
@@ -359,9 +407,12 @@ _imperial_precmd_start=0
 
 _imperial_preexec_timer() {
   _imperial_precmd_start=$EPOCHREALTIME
+  _imperial_cmd_ran=1
 }
 
 _imperial_precmd_ritual() {
+  _imperial_ritual_feedback_precmd
+
   if [[ -z "${_imperial_precmd_start}" ]]; then
     return
   fi
@@ -373,7 +424,7 @@ _imperial_precmd_ritual() {
   _imperial_precmd_start=""
 }
 
-if [[ "${IMPERIAL_RITUAL_SPINNER:-1}" != "0" ]]; then
+if [[ "${IMPERIAL_RITUAL_SPINNER:-1}" != "0" || "${IMPERIAL_RITUAL_FEEDBACK:-1}" != "0" ]]; then
   autoload -Uz add-zsh-hook
   add-zsh-hook preexec _imperial_preexec_timer
   add-zsh-hook precmd _imperial_precmd_ritual
