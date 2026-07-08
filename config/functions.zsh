@@ -112,9 +112,33 @@ _imperial_random_litany() {
     _imperial_load_litanies || return 1
   fi
 
-  local idx=$(( RANDOM % ${#IMPERIAL_LITANY_TITLES[@]} + 1 ))
-  REPLY_TITLE="${IMPERIAL_LITANY_TITLES[idx]}"
-  REPLY_BODY="${IMPERIAL_LITANY_BODIES[idx]}"
+  local theme_mode="${IMPERIAL_THEME_MODE:-imperial}"
+  local want_chaos=0
+  [[ "${theme_mode:l}" == chaos ]] && want_chaos=1
+
+  local -a titles bodies
+  local i title
+
+  for i in {1..${#IMPERIAL_LITANY_TITLES}}; do
+    title="${IMPERIAL_LITANY_TITLES[i]}"
+    if (( want_chaos )); then
+      [[ "${title}" == Chaos\ ::\ * ]] || continue
+    else
+      [[ "${title}" == Chaos\ ::\ * ]] && continue
+    fi
+
+    titles+=("${title}")
+    bodies+=("${IMPERIAL_LITANY_BODIES[i]}")
+  done
+
+  if (( ${#titles[@]} == 0 )); then
+    titles=("${IMPERIAL_LITANY_TITLES[@]}")
+    bodies=("${IMPERIAL_LITANY_BODIES[@]}")
+  fi
+
+  local idx=$(( RANDOM % ${#titles[@]} + 1 ))
+  REPLY_TITLE="${titles[idx]}"
+  REPLY_BODY="${bodies[idx]}"
 }
 
 imperial_creed() {
@@ -128,27 +152,28 @@ imperial_litany() {
   local title body line
   if ! _imperial_random_litany; then
     print -P ""
-    print -P "${IMPERIAL_PROMPT_MECHANICUS}  ☩ LITANIE DE L'ESPRIT DE LA MACHINE ☩${IMPERIAL_PROMPT_RESET}"
+    print -P "${IMPERIAL_THEME_BANNER_TITLE_COLOR:-${IMPERIAL_PROMPT_MECHANICUS}}  ☩ LITANIE DE L'ESPRIT DE LA MACHINE ☩${IMPERIAL_PROMPT_RESET}"
     print -P ""
-    print -P "${IMPERIAL_PROMPT_SACRED}  > Gloire à l'Omnimessie !${IMPERIAL_PROMPT_RESET}"
+    print -P "${IMPERIAL_THEME_BANNER_VALUE_COLOR:-${IMPERIAL_PROMPT_SACRED}}  > Gloire à l'Omnimessie !${IMPERIAL_PROMPT_RESET}"
     print -P ""
     return
   fi
 
   title="${REPLY_TITLE}"
   body="${REPLY_BODY}"
+  title="${title#Chaos :: }"
 
   print -P ""
-  print -P "${IMPERIAL_PROMPT_MECHANICUS}  ☩ ${title} ☩${IMPERIAL_PROMPT_RESET}"
-  print -P "${IMPERIAL_PROMPT_BRASS}  ─────────────────────────────────${IMPERIAL_PROMPT_RESET}"
+  print -P "${IMPERIAL_THEME_BANNER_TITLE_COLOR:-${IMPERIAL_PROMPT_MECHANICUS}}  ☩ ${title} ☩${IMPERIAL_PROMPT_RESET}"
+  print -P "${IMPERIAL_THEME_BANNER_DIVIDER_COLOR:-${IMPERIAL_PROMPT_BRASS}}  ─────────────────────────────────${IMPERIAL_PROMPT_RESET}"
   print -P ""
 
   while IFS= read -r line; do
     [[ -z "${line}" ]] && continue
     if [[ "${line}" =~ '^[01 ]+$' ]]; then
-      print -P "${IMPERIAL_PROMPT_PLASMA}  ${line}${IMPERIAL_PROMPT_RESET}"
+      print -P "${IMPERIAL_THEME_BANNER_LABEL_COLOR:-${IMPERIAL_PROMPT_PLASMA}}  ${line}${IMPERIAL_PROMPT_RESET}"
     else
-      print -P "${IMPERIAL_PROMPT_IVORY}  ${line}${IMPERIAL_PROMPT_RESET}"
+      print -P "${IMPERIAL_THEME_BANNER_VALUE_COLOR:-${IMPERIAL_PROMPT_IVORY}}  ${line}${IMPERIAL_PROMPT_RESET}"
     fi
   done <<< "${body}"
 
@@ -279,16 +304,17 @@ imperial_welcome_banner() {
   vessel="${vessel:0:$(( IMPERIAL_BOX_INNER_WIDTH - 18 ))}"
 
   print -P ""
-  print -P "${IMPERIAL_PROMPT_COG}     ⚙⚙⚙  COGITATEUR EN ÉVEIL  ⚙⚙⚙${IMPERIAL_PROMPT_RESET}"
+  print -P "${IMPERIAL_THEME_BANNER_HEADER_COLOR:-${IMPERIAL_PROMPT_COG}}     ⚙⚙⚙  ${IMPERIAL_THEME_BANNER_HEADER_TEXT:-COGITATEUR EN ÉVEIL}  ⚙⚙⚙${IMPERIAL_PROMPT_RESET}"
   print -P ""
-  print -P "${IMPERIAL_PROMPT_GOLD}╔${(l:$IMPERIAL_BOX_INNER_WIDTH::═:)}╗${IMPERIAL_PROMPT_RESET}"
-  _imperial_box_line "${IMPERIAL_PROMPT_IVORY}   ${IMPERIAL_THEME_TITLE}"
-  _imperial_box_line "${IMPERIAL_PROMPT_MECHANICUS}   ${IMPERIAL_THEME_SUBTITLE}"
-  print -P "${IMPERIAL_PROMPT_GOLD}╠${(l:$IMPERIAL_BOX_INNER_WIDTH::═:)}╣${IMPERIAL_PROMPT_RESET}"
-  _imperial_box_line "${IMPERIAL_PROMPT_BRASS} ${IMPERIAL_THEME_STATUS_LABEL} : ${status_color}${spirit_status}"
-  _imperial_box_line "${IMPERIAL_PROMPT_BRASS} Access Level      : ${IMPERIAL_PROMPT_SACRED}${level}"
-  _imperial_box_line "${IMPERIAL_PROMPT_BRASS} ${IMPERIAL_THEME_VESSEL_LABEL}   : ${IMPERIAL_PROMPT_IVORY}${vessel}"
-  print -P "${IMPERIAL_PROMPT_GOLD}╚${(l:$IMPERIAL_BOX_INNER_WIDTH::═:)}╝${IMPERIAL_PROMPT_RESET}"
+  print -P "${IMPERIAL_THEME_BANNER_FRAME_COLOR:-${IMPERIAL_PROMPT_GOLD}}╔${(l:$IMPERIAL_BOX_INNER_WIDTH::═:)}╗${IMPERIAL_PROMPT_RESET}"
+  _imperial_box_line "${IMPERIAL_THEME_BANNER_TITLE_COLOR:-${IMPERIAL_PROMPT_IVORY}}   ${IMPERIAL_THEME_TITLE}"
+  _imperial_box_line "${IMPERIAL_THEME_BANNER_SUBTITLE_COLOR:-${IMPERIAL_PROMPT_MECHANICUS}}   ${IMPERIAL_THEME_SUBTITLE}"
+  print -P "${IMPERIAL_THEME_BANNER_FRAME_COLOR:-${IMPERIAL_PROMPT_GOLD}}╠${(l:$IMPERIAL_BOX_INNER_WIDTH::═:)}╣${IMPERIAL_PROMPT_RESET}"
+  _imperial_box_line "${IMPERIAL_THEME_BANNER_LABEL_COLOR:-${IMPERIAL_PROMPT_BRASS}} ${IMPERIAL_THEME_STATUS_LABEL} : ${status_color}${spirit_status}"
+  _imperial_box_line "${IMPERIAL_THEME_BANNER_LABEL_COLOR:-${IMPERIAL_PROMPT_BRASS}} Access Level      : ${IMPERIAL_THEME_BANNER_VALUE_COLOR:-${IMPERIAL_PROMPT_SACRED}}${level}"
+  _imperial_box_line "${IMPERIAL_THEME_BANNER_LABEL_COLOR:-${IMPERIAL_PROMPT_BRASS}} ${IMPERIAL_THEME_VESSEL_LABEL}   : ${IMPERIAL_THEME_BANNER_VALUE_COLOR:-${IMPERIAL_PROMPT_IVORY}}${vessel}"
+  _imperial_box_line "${IMPERIAL_THEME_BANNER_LABEL_COLOR:-${IMPERIAL_PROMPT_BRASS}} Mode              : ${IMPERIAL_THEME_BANNER_VALUE_COLOR:-${IMPERIAL_PROMPT_SACRED}}${IMPERIAL_THEME_LABEL}"
+  print -P "${IMPERIAL_THEME_BANNER_FRAME_COLOR:-${IMPERIAL_PROMPT_GOLD}}╚${(l:$IMPERIAL_BOX_INNER_WIDTH::═:)}╝${IMPERIAL_PROMPT_RESET}"
 
   # Machine Spirit litany (random full litany)
   imperial_litany
