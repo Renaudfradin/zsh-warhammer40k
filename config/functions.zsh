@@ -163,6 +163,82 @@ omnissiah() {
   print -P ""
 }
 
+_imperial_theme_mode_normalize() {
+  case "${1:l}" in
+    chaos|warp|ruin|heretic) echo "chaos" ;;
+    *) echo "imperial" ;;
+  esac
+}
+
+_imperial_set_theme_mode() {
+  local mode="$(_imperial_theme_mode_normalize "${1:-imperial}")"
+  local local_file="${IMPERIAL_ROOT}/config/local.zsh"
+  local tmp_file="${local_file}.tmp.$$"
+  local found=0
+
+  mkdir -p "${local_file:h}" 2>/dev/null || return 1
+
+  : > "${tmp_file}" || return 1
+
+  if [[ -f "${local_file}" ]]; then
+    local line
+    while IFS= read -r line; do
+      if [[ "${line}" == export\ IMPERIAL_THEME_MODE=* ]]; then
+        print -r -- "export IMPERIAL_THEME_MODE=\"${mode}\"" >> "${tmp_file}"
+        found=1
+      else
+        print -r -- "${line}" >> "${tmp_file}"
+      fi
+    done < "${local_file}"
+  fi
+
+  if (( found == 0 )); then
+    print -r -- "export IMPERIAL_THEME_MODE=\"${mode}\"" >> "${tmp_file}"
+  fi
+
+  mv "${tmp_file}" "${local_file}" || return 1
+}
+
+faction() {
+  local mode="${1:-toggle}"
+
+  case "${mode:l}" in
+    imperial|imperium|emperor)
+      mode="imperial"
+      ;;
+    chaos|warp|ruin|heretic)
+      mode="chaos"
+      ;;
+    toggle)
+      if [[ "${IMPERIAL_THEME_MODE:-imperial}" == "chaos" ]]; then
+        mode="imperial"
+      else
+        mode="chaos"
+      fi
+      ;;
+    *)
+      print -P "${IMPERIAL_PROMPT_RED}Usage: faction imperial|chaos|toggle${IMPERIAL_PROMPT_RESET}"
+      return 1
+      ;;
+  esac
+
+  export IMPERIAL_THEME_MODE="${mode}"
+  _imperial_set_theme_mode "${mode}" || {
+    print -P "${IMPERIAL_PROMPT_RED}Unable to persist theme choice.${IMPERIAL_PROMPT_RESET}"
+    return 1
+  }
+
+  [[ -f "${IMPERIAL_ROOT}/config/colors.zsh" ]] && source "${IMPERIAL_ROOT}/config/colors.zsh"
+  [[ -f "${HOME}/.p10k.zsh" ]] && source "${HOME}/.p10k.zsh"
+
+  if whence -w zle &>/dev/null; then
+    zle reset-prompt 2>/dev/null || true
+    zle -R 2>/dev/null || true
+  fi
+
+  print -P "${IMPERIAL_PROMPT_GOLD}Theme switched to ${IMPERIAL_PROMPT_IVORY}${IMPERIAL_THEME_TITLE}${IMPERIAL_PROMPT_GOLD}.${IMPERIAL_PROMPT_RESET}"
+}
+
 # ── Welcome Banner — Cogitator Awakening Ritual ───────────────────────────────
 
 # Inner width between ║ borders (re-source safe — no readonly)
@@ -206,12 +282,12 @@ imperial_welcome_banner() {
   print -P "${IMPERIAL_PROMPT_COG}     ⚙⚙⚙  COGITATEUR EN ÉVEIL  ⚙⚙⚙${IMPERIAL_PROMPT_RESET}"
   print -P ""
   print -P "${IMPERIAL_PROMPT_GOLD}╔${(l:$IMPERIAL_BOX_INNER_WIDTH::═:)}╗${IMPERIAL_PROMPT_RESET}"
-  _imperial_box_line "${IMPERIAL_PROMPT_IVORY}   IMPERIAL COMMAND TERMINAL"
-  _imperial_box_line "${IMPERIAL_PROMPT_MECHANICUS}   Adeptus Mechanicus · Mars"
+  _imperial_box_line "${IMPERIAL_PROMPT_IVORY}   ${IMPERIAL_THEME_TITLE}"
+  _imperial_box_line "${IMPERIAL_PROMPT_MECHANICUS}   ${IMPERIAL_THEME_SUBTITLE}"
   print -P "${IMPERIAL_PROMPT_GOLD}╠${(l:$IMPERIAL_BOX_INNER_WIDTH::═:)}╣${IMPERIAL_PROMPT_RESET}"
-  _imperial_box_line "${IMPERIAL_PROMPT_BRASS} Machine Spirit : ${status_color}${spirit_status}"
-  _imperial_box_line "${IMPERIAL_PROMPT_BRASS} Access Level   : ${IMPERIAL_PROMPT_SACRED}${level}"
-  _imperial_box_line "${IMPERIAL_PROMPT_BRASS} Forge Vessel   : ${IMPERIAL_PROMPT_IVORY}${vessel}"
+  _imperial_box_line "${IMPERIAL_PROMPT_BRASS} ${IMPERIAL_THEME_STATUS_LABEL} : ${status_color}${spirit_status}"
+  _imperial_box_line "${IMPERIAL_PROMPT_BRASS} Access Level      : ${IMPERIAL_PROMPT_SACRED}${level}"
+  _imperial_box_line "${IMPERIAL_PROMPT_BRASS} ${IMPERIAL_THEME_VESSEL_LABEL}   : ${IMPERIAL_PROMPT_IVORY}${vessel}"
   print -P "${IMPERIAL_PROMPT_GOLD}╚${(l:$IMPERIAL_BOX_INNER_WIDTH::═:)}╝${IMPERIAL_PROMPT_RESET}"
 
   # Machine Spirit litany (random full litany)
@@ -374,6 +450,101 @@ exterminatus() {
       return 1
       ;;
   esac
+}
+
+# ── Imperial Help ─────────────────────────────────────────────────────────────
+
+_imperial_help_section() {
+  local title="$1"
+  shift
+
+  print -P "${IMPERIAL_PROMPT_BRASS}${title}${IMPERIAL_PROMPT_RESET}"
+  local entry
+  for entry in "$@"; do
+    print -P "${IMPERIAL_PROMPT_IVORY}  ${entry}${IMPERIAL_PROMPT_RESET}"
+  done
+  print -P ""
+}
+
+help() {
+  if [[ $# -gt 0 ]]; then
+    local name="$1"
+    if alias "${name}" &>/dev/null; then
+      alias "${name}"
+      return 0
+    fi
+
+    if whence -w "${name}" &>/dev/null; then
+      whence -v "${name}"
+      return 0
+    fi
+
+    echo "Unknown command: ${name}"
+    return 1
+  fi
+
+  print -P "${IMPERIAL_PROMPT_GOLD}═══ IMPERIAL COMMAND HELP ═══${IMPERIAL_PROMPT_RESET}"
+  print -P "${IMPERIAL_PROMPT_BRASS}Type ${IMPERIAL_PROMPT_IVORY}help <name>${IMPERIAL_PROMPT_BRASS} to inspect a command or alias.${IMPERIAL_PROMPT_RESET}"
+  print -P ""
+
+  _imperial_help_section "Core" \
+    "help                 Show this menu" \
+    "reload               Reload ~/.zshrc" \
+    "faction imperial     Switch to the Imperial terminal" \
+    "faction chaos        Switch to the Chaos terminal" \
+    "faction toggle       Flip between the two modes" \
+    "banner / eveil       Replay the awakening ritual" \
+    "machine_spirit       Show system diagnostics" \
+    "imperial_status      Show the full dossier" \
+    "access_level         Show your clearance" \
+    "creed                Print a random Imperial quote"
+
+  _imperial_help_section "Litany & Ritual" \
+    "litany / priere      Print a machine spirit litany" \
+    "omnissiah / gloire   Litany plus glory to the Omnissiah" \
+    "gloire               Alias for omnissiah"
+
+  _imperial_help_section "Navigation" \
+    ".. / ... / ....      Go up 1 / 2 / 3 directories" \
+    "warp                 zoxide jump" \
+    "astartes-drop        Interactive zoxide jump" \
+    "sector <path>        Enter a sector and list files"
+
+  _imperial_help_section "Git" \
+    "gs / ga / gaa        status / add / add --all" \
+    "gc / gcm             commit / commit -m" \
+    "gp / gpl             push / pull" \
+    "gd / gds             diff / staged diff" \
+    "gl / gla             compact git log views" \
+    "gb / gco / gcb       branch / checkout / checkout -b" \
+    "gsw / gswc           switch / switch -c" \
+    "gst / gstp           stash / stash pop" \
+    "gr / gf              remote -v / fetch --all --prune" \
+    "gbless               Commit helper"
+
+  _imperial_help_section "Docker & Kubernetes" \
+    "d / dc               docker / docker compose" \
+    "dps                  docker ps with a custom table" \
+    "k / kgp / kgs / kgn  kubectl shortcuts" \
+    "exterminatus [git|docker]  Guarded destructive purge"
+
+  _imperial_help_section "Tools" \
+    "auspex               rg" \
+    "seek                 fd / fdfind" \
+    "sanctify             bat / batcat" \
+    "reliquary            eza -la --git" \
+    "cogitator            btop / htop / top" \
+    "vox / voxcast        ping shortcuts" \
+    "chronicle            history" \
+    "chronicle-grep       history | grep"
+
+  _imperial_help_section "Editing" \
+    "zshconfig            Open ~/.zshrc in your editor" \
+    "p10kconfig           Open ~/.p10k.zsh in your editor"
+
+  _imperial_help_section "Safety" \
+    "purge                rm -i" \
+    "annihilate           rm -i"
 }
 
 # ── Ritual Feedback (unknown command / success) ─────────────────────────────────

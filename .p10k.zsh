@@ -21,13 +21,27 @@
   # Transient prompt
   typeset -g POWERLEVEL9K_TRANSIENT_PROMPT=always
 
-  # Prompt char — Holy Aquila
-  typeset -g POWERLEVEL9K_PROMPT_CHAR_OK_{VIINS,VICMD,VIVIS,VIOWR}_CONTENT_EXPANSION='⚜'
-  typeset -g POWERLEVEL9K_PROMPT_CHAR_ERROR_{VIINS,VICMD,VIVIS,VIOWR}_CONTENT_EXPANSION='☩'
-  typeset -g POWERLEVEL9K_PROMPT_CHAR_{OK,ERROR}_VIINS_CONTENT_EXPANSION='⚜'
-  typeset -g POWERLEVEL9K_PROMPT_CHAR_OK_FOREGROUND=220
-  typeset -g POWERLEVEL9K_PROMPT_CHAR_ERROR_FOREGROUND=196
-  typeset -g POWERLEVEL9K_PROMPT_CHAR_{OK,ERROR}_VIINS_FOREGROUND=220
+  local theme_mode="${IMPERIAL_THEME_MODE:-imperial}"
+  case "${theme_mode:l}" in
+    chaos|warp|ruin|heretic)
+      # Prompt char — Warp sigil
+      typeset -g POWERLEVEL9K_PROMPT_CHAR_OK_{VIINS,VICMD,VIVIS,VIOWR}_CONTENT_EXPANSION='⛧'
+      typeset -g POWERLEVEL9K_PROMPT_CHAR_ERROR_{VIINS,VICMD,VIVIS,VIOWR}_CONTENT_EXPANSION='☣'
+      typeset -g POWERLEVEL9K_PROMPT_CHAR_{OK,ERROR}_VIINS_CONTENT_EXPANSION='⛧'
+      typeset -g POWERLEVEL9K_PROMPT_CHAR_OK_FOREGROUND=201
+      typeset -g POWERLEVEL9K_PROMPT_CHAR_ERROR_FOREGROUND=196
+      typeset -g POWERLEVEL9K_PROMPT_CHAR_{OK,ERROR}_VIINS_FOREGROUND=201
+      ;;
+    *)
+      # Prompt char — Holy Aquila
+      typeset -g POWERLEVEL9K_PROMPT_CHAR_OK_{VIINS,VICMD,VIVIS,VIOWR}_CONTENT_EXPANSION='⚜'
+      typeset -g POWERLEVEL9K_PROMPT_CHAR_ERROR_{VIINS,VICMD,VIVIS,VIOWR}_CONTENT_EXPANSION='☩'
+      typeset -g POWERLEVEL9K_PROMPT_CHAR_{OK,ERROR}_VIINS_CONTENT_EXPANSION='⚜'
+      typeset -g POWERLEVEL9K_PROMPT_CHAR_OK_FOREGROUND=220
+      typeset -g POWERLEVEL9K_PROMPT_CHAR_ERROR_FOREGROUND=196
+      typeset -g POWERLEVEL9K_PROMPT_CHAR_{OK,ERROR}_VIINS_FOREGROUND=220
+      ;;
+  esac
   typeset -g POWERLEVEL9K_PROMPT_CHAR_LEFT_PROMPT_LAST_SEGMENT_END_SYMBOL=''
   typeset -g POWERLEVEL9K_PROMPT_CHAR_LEFT_{LEFT,RIGHT}_WHITESPACE=''
 
@@ -58,39 +72,78 @@
     disk_usage
   )
 
-  # OS icon — Cog Mechanicum
-  typeset -g POWERLEVEL9K_OS_ICON_FOREGROUND=214
-  typeset -g POWERLEVEL9K_OS_ICON_CONTENT_EXPANSION='⚙'
+  case "${theme_mode:l}" in
+    chaos|warp|ruin|heretic)
+      # OS icon — Warp corruption
+      typeset -g POWERLEVEL9K_OS_ICON_FOREGROUND=201
+      typeset -g POWERLEVEL9K_OS_ICON_CONTENT_EXPANSION='☣'
 
-  # User — Tech-Priest gold
-  typeset -g POWERLEVEL9K_USER_FOREGROUND=220
-  typeset -g POWERLEVEL9K_USER_ICON='⚙'
-  typeset -g POWERLEVEL9K_USER_DEFAULT_FOREGROUND=220
-  typeset -g POWERLEVEL9K_USER_ROOT_FOREGROUND=196
-  typeset -g POWERLEVEL9K_USER_ROOT_ICON='☩'
-  typeset -g POWERLEVEL9K_USER_TEMPLATE='%n'
+      # User — heretek magenta
+      typeset -g POWERLEVEL9K_USER_FOREGROUND=225
+      typeset -g POWERLEVEL9K_USER_ICON='☣'
+      typeset -g POWERLEVEL9K_USER_DEFAULT_FOREGROUND=225
+      typeset -g POWERLEVEL9K_USER_ROOT_FOREGROUND=196
+      typeset -g POWERLEVEL9K_USER_ROOT_ICON='⛧'
+      typeset -g POWERLEVEL9K_USER_TEMPLATE='%n'
 
-  # Host — brass forge vessel
-  typeset -g POWERLEVEL9K_HOST_FOREGROUND=130
-  typeset -g POWERLEVEL9K_HOST_ICON='⚜'
-  typeset -g POWERLEVEL9K_HOST_TEMPLATE='%m'
+      # Host — warp sigil
+      typeset -g POWERLEVEL9K_HOST_FOREGROUND=171
+      typeset -g POWERLEVEL9K_HOST_ICON='⛧'
+      typeset -g POWERLEVEL9K_HOST_TEMPLATE='%m'
 
-  # Directory (Sector) — parchment with brass anchor
-  typeset -g POWERLEVEL9K_DIR_FOREGROUND=187
-  typeset -g POWERLEVEL9K_DIR_ICON='☩'
-  typeset -g POWERLEVEL9K_DIR_SHORTENED_FOREGROUND=130
-  typeset -g POWERLEVEL9K_DIR_ANCHOR_FOREGROUND=220
-  typeset -g POWERLEVEL9K_DIR_ANCHOR_BOLD=true
-  typeset -g POWERLEVEL9K_SHORTEN_STRATEGY=truncate_to_unique
-  typeset -g POWERLEVEL9K_SHORTEN_DIR_LENGTH=1
-  typeset -g POWERLEVEL9K_DIR_MAX_LENGTH=60
+      # Directory — tainted parchment
+      typeset -g POWERLEVEL9K_DIR_FOREGROUND=225
+      typeset -g POWERLEVEL9K_DIR_ICON='☣'
+      typeset -g POWERLEVEL9K_DIR_SHORTENED_FOREGROUND=171
+      typeset -g POWERLEVEL9K_DIR_ANCHOR_FOREGROUND=201
+      typeset -g POWERLEVEL9K_DIR_ANCHOR_BOLD=true
+      typeset -g POWERLEVEL9K_SHORTEN_STRATEGY=truncate_to_unique
+      typeset -g POWERLEVEL9K_SHORTEN_DIR_LENGTH=1
+      typeset -g POWERLEVEL9K_DIR_MAX_LENGTH=60
 
-  # Date & Time — incense brass
-  typeset -g POWERLEVEL9K_DATE_FOREGROUND=172
-  typeset -g POWERLEVEL9K_DATE_ICON='☩'
-  typeset -g POWERLEVEL9K_TIME_FOREGROUND=187
-  typeset -g POWERLEVEL9K_TIME_ICON='⌛'
-  typeset -g POWERLEVEL9K_TIME_FORMAT='%H:%M'
+      # Date & Time — warp bruised brass
+      typeset -g POWERLEVEL9K_DATE_FOREGROUND=213
+      typeset -g POWERLEVEL9K_DATE_ICON='☣'
+      typeset -g POWERLEVEL9K_TIME_FOREGROUND=225
+      typeset -g POWERLEVEL9K_TIME_ICON='⌛'
+      typeset -g POWERLEVEL9K_TIME_FORMAT='%H:%M'
+      ;;
+    *)
+      # OS icon — Cog Mechanicum
+      typeset -g POWERLEVEL9K_OS_ICON_FOREGROUND=214
+      typeset -g POWERLEVEL9K_OS_ICON_CONTENT_EXPANSION='⚙'
+
+      # User — Tech-Priest gold
+      typeset -g POWERLEVEL9K_USER_FOREGROUND=220
+      typeset -g POWERLEVEL9K_USER_ICON='⚙'
+      typeset -g POWERLEVEL9K_USER_DEFAULT_FOREGROUND=220
+      typeset -g POWERLEVEL9K_USER_ROOT_FOREGROUND=196
+      typeset -g POWERLEVEL9K_USER_ROOT_ICON='☩'
+      typeset -g POWERLEVEL9K_USER_TEMPLATE='%n'
+
+      # Host — brass forge vessel
+      typeset -g POWERLEVEL9K_HOST_FOREGROUND=130
+      typeset -g POWERLEVEL9K_HOST_ICON='⚜'
+      typeset -g POWERLEVEL9K_HOST_TEMPLATE='%m'
+
+      # Directory (Sector) — parchment with brass anchor
+      typeset -g POWERLEVEL9K_DIR_FOREGROUND=187
+      typeset -g POWERLEVEL9K_DIR_ICON='☩'
+      typeset -g POWERLEVEL9K_DIR_SHORTENED_FOREGROUND=130
+      typeset -g POWERLEVEL9K_DIR_ANCHOR_FOREGROUND=220
+      typeset -g POWERLEVEL9K_DIR_ANCHOR_BOLD=true
+      typeset -g POWERLEVEL9K_SHORTEN_STRATEGY=truncate_to_unique
+      typeset -g POWERLEVEL9K_SHORTEN_DIR_LENGTH=1
+      typeset -g POWERLEVEL9K_DIR_MAX_LENGTH=60
+
+      # Date & Time — incense brass
+      typeset -g POWERLEVEL9K_DATE_FOREGROUND=172
+      typeset -g POWERLEVEL9K_DATE_ICON='☩'
+      typeset -g POWERLEVEL9K_TIME_FOREGROUND=187
+      typeset -g POWERLEVEL9K_TIME_ICON='⌛'
+      typeset -g POWERLEVEL9K_TIME_FORMAT='%H:%M'
+      ;;
+  esac
 
   # Status (exit code) — skull of failure
   typeset -g POWERLEVEL9K_STATUS_OK=false
@@ -161,27 +214,52 @@
     tmux
   )
 
-  # ── Git (VCS) — Imperial Archive Colors ─────────────────────────────────────
+  # ── Git (VCS) ───────────────────────────────────────────────────────────────
 
-  typeset -g POWERLEVEL9K_VCS_CLEAN_FOREGROUND=220
-  typeset -g POWERLEVEL9K_VCS_MODIFIED_FOREGROUND=160
-  typeset -g POWERLEVEL9K_VCS_UNTRACKED_FOREGROUND=167
-  typeset -g POWERLEVEL9K_VCS_CONFLICTED_FOREGROUND=52
-  typeset -g POWERLEVEL9K_VCS_CONFLICTED_BACKGROUND=52
-  typeset -g POWERLEVEL9K_VCS_LOADING_FOREGROUND=172
+  case "${theme_mode:l}" in
+    chaos|warp|ruin|heretic)
+      typeset -g POWERLEVEL9K_VCS_CLEAN_FOREGROUND=225
+      typeset -g POWERLEVEL9K_VCS_MODIFIED_FOREGROUND=196
+      typeset -g POWERLEVEL9K_VCS_UNTRACKED_FOREGROUND=201
+      typeset -g POWERLEVEL9K_VCS_CONFLICTED_FOREGROUND=52
+      typeset -g POWERLEVEL9K_VCS_CONFLICTED_BACKGROUND=52
+      typeset -g POWERLEVEL9K_VCS_LOADING_FOREGROUND=213
 
-  typeset -g POWERLEVEL9K_VCS_BRANCH_ICON='🛡'
-  typeset -g POWERLEVEL9K_VCS_COMMIT_ICON='📜'
-  typeset -g POWERLEVEL9K_VCS_ICON='🧬'
-  typeset -g POWERLEVEL9K_VCS_STAGED_ICON='✚'
-  typeset -g POWERLEVEL9K_VCS_UNSTAGED_ICON='!'
-  typeset -g POWERLEVEL9K_VCS_UNTRACKED_ICON='?'
-  typeset -g POWERLEVEL9K_VCS_INCOMING_CHANGES_ICON='⇣'
-  typeset -g POWERLEVEL9K_VCS_OUTGOING_CHANGES_ICON='⇡'
+      typeset -g POWERLEVEL9K_VCS_BRANCH_ICON='🜁'
+      typeset -g POWERLEVEL9K_VCS_COMMIT_ICON='📜'
+      typeset -g POWERLEVEL9K_VCS_ICON='🜏'
+      typeset -g POWERLEVEL9K_VCS_STAGED_ICON='✚'
+      typeset -g POWERLEVEL9K_VCS_UNSTAGED_ICON='!'
+      typeset -g POWERLEVEL9K_VCS_UNTRACKED_ICON='?'
+      typeset -g POWERLEVEL9K_VCS_INCOMING_CHANGES_ICON='⇣'
+      typeset -g POWERLEVEL9K_VCS_OUTGOING_CHANGES_ICON='⇡'
 
-  # Staged = ivory purity seal
-  typeset -g POWERLEVEL9K_VCS_STAGED_FOREGROUND=187
-  typeset -g POWERLEVEL9K_VCS_UNSTAGED_FOREGROUND=160
+      # Staged = warped parchment
+      typeset -g POWERLEVEL9K_VCS_STAGED_FOREGROUND=225
+      typeset -g POWERLEVEL9K_VCS_UNSTAGED_FOREGROUND=196
+      ;;
+    *)
+      typeset -g POWERLEVEL9K_VCS_CLEAN_FOREGROUND=220
+      typeset -g POWERLEVEL9K_VCS_MODIFIED_FOREGROUND=160
+      typeset -g POWERLEVEL9K_VCS_UNTRACKED_FOREGROUND=167
+      typeset -g POWERLEVEL9K_VCS_CONFLICTED_FOREGROUND=52
+      typeset -g POWERLEVEL9K_VCS_CONFLICTED_BACKGROUND=52
+      typeset -g POWERLEVEL9K_VCS_LOADING_FOREGROUND=172
+
+      typeset -g POWERLEVEL9K_VCS_BRANCH_ICON='🛡'
+      typeset -g POWERLEVEL9K_VCS_COMMIT_ICON='📜'
+      typeset -g POWERLEVEL9K_VCS_ICON='🧬'
+      typeset -g POWERLEVEL9K_VCS_STAGED_ICON='✚'
+      typeset -g POWERLEVEL9K_VCS_UNSTAGED_ICON='!'
+      typeset -g POWERLEVEL9K_VCS_UNTRACKED_ICON='?'
+      typeset -g POWERLEVEL9K_VCS_INCOMING_CHANGES_ICON='⇣'
+      typeset -g POWERLEVEL9K_VCS_OUTGOING_CHANGES_ICON='⇡'
+
+      # Staged = ivory purity seal
+      typeset -g POWERLEVEL9K_VCS_STAGED_FOREGROUND=187
+      typeset -g POWERLEVEL9K_VCS_UNSTAGED_FOREGROUND=160
+      ;;
+  esac
 
   function prompt_vcs_instant_prompt() {
     POWERLEVEL9K_VCS_INSTANT_PROMPT=quiet

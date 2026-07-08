@@ -13,6 +13,9 @@ else
 fi
 export IMPERIAL_ROOT
 
+# Local overrides and theme mode (gitignored)
+[[ -f "${IMPERIAL_ROOT}/config/local.zsh" ]] && source "${IMPERIAL_ROOT}/config/local.zsh"
+
 # Enable Powerlevel10k instant prompt (must be first)
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
@@ -69,9 +72,6 @@ for _imperial_module in \
   [[ -f "${_imperial_file}" ]] && source "${_imperial_file}"
 done
 unset _imperial_module _imperial_file
-
-# Local overrides (gitignored)
-[[ -f "${IMPERIAL_ROOT}/config/local.zsh" ]] && source "${IMPERIAL_ROOT}/config/local.zsh"
 
 # Powerlevel10k configuration
 [[ -f "${HOME}/.p10k.zsh" ]] && source "${HOME}/.p10k.zsh"

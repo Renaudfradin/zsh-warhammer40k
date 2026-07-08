@@ -92,9 +92,13 @@ litany      # Litane seule
 priere      # Litane seule (alias FR)
 gloire      # Gloire à l'Omnissiah
 creed       # Citation Imperialis
+faction imperial  # Retour au terminal de l'Imperium
+faction chaos     # Bascule vers le terminal du Chaos
 ```
 
 Désactiver le rituel : `export IMPERIAL_BANNER=0` dans `config/local.zsh`
+
+Le choix de faction est enregistré dans `config/local.zsh`, donc il persiste après ouverture d’un nouveau shell.
 
 ---
 
@@ -334,6 +338,7 @@ zsh-warhammer40k/
 
 | Command | Description |
 |---------|-------------|
+| `help` | Show custom commands and aliases |
 | `machine_spirit` | Machine Spirit diagnostics |
 | `imperial_status` | Full cogitator dossier |
 | `access_level` | Show clearance (INITIATE / MAGOS / PRIMARCH) |
