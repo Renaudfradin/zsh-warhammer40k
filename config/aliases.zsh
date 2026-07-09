@@ -19,8 +19,8 @@ alias chronicle-grep='history | grep'
 # ── Git — Imperial Archive Protocols ──────────────────────────────────────────
 
 alias gs='git status'
-alias ga='git add'
-alias gaa='git add --all'
+alias ga='git add .'
+alias gaa='git add --all .'
 alias gc='git commit'
 alias gcm='git commit -m'
 alias gp='git push'
