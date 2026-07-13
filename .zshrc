@@ -72,6 +72,7 @@ for _imperial_module in \
   [[ -f "${_imperial_file}" ]] && source "${_imperial_file}"
 done
 unset _imperial_module _imperial_file
+alias sail='sh $([ -f sail ] && echo sail || echo vendor/bin/sail)'
 
 # Powerlevel10k configuration
 [[ -f "${HOME}/.p10k.zsh" ]] && source "${HOME}/.p10k.zsh"

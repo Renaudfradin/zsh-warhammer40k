@@ -286,6 +286,18 @@ _imperial_box_line() {
   print -P -- "${IMPERIAL_PROMPT_GOLD}║${content}${(l:pad:: :)}${IMPERIAL_PROMPT_GOLD}║${IMPERIAL_PROMPT_RESET}"
 }
 
+_imperial_print_cogitator_logo() {
+  [[ -f "${IMPERIAL_ROOT}/assets/ascii/cogitator-logo.txt" ]] || return 0
+  local line
+  local color="${IMPERIAL_THEME_BANNER_HEADER_COLOR:-${IMPERIAL_PROMPT_COG}}"
+  local color_ansi reset_ansi
+  color_ansi="$(print -P -- "${color}")"
+  reset_ansi="$(print -P -- "${IMPERIAL_PROMPT_RESET}")"
+  while IFS= read -r line; do
+    print -r -- "${color_ansi}${line}${reset_ansi}"
+  done < "${IMPERIAL_ROOT}/assets/ascii/cogitator-logo.txt"
+}
+
 imperial_welcome_banner() {
   [[ -n "${IMPERIAL_BANNER_SHOWN:-}" ]] && return
   export IMPERIAL_BANNER_SHOWN=1
@@ -305,6 +317,7 @@ imperial_welcome_banner() {
 
   print -P ""
   print -P "${IMPERIAL_THEME_BANNER_HEADER_COLOR:-${IMPERIAL_PROMPT_COG}}     ⚙⚙⚙  ${IMPERIAL_THEME_BANNER_HEADER_TEXT:-COGITATEUR EN ÉVEIL}  ⚙⚙⚙${IMPERIAL_PROMPT_RESET}"
+  _imperial_print_cogitator_logo
   print -P ""
   print -P "${IMPERIAL_THEME_BANNER_FRAME_COLOR:-${IMPERIAL_PROMPT_GOLD}}╔${(l:$IMPERIAL_BOX_INNER_WIDTH::═:)}╗${IMPERIAL_PROMPT_RESET}"
   _imperial_box_line "${IMPERIAL_THEME_BANNER_TITLE_COLOR:-${IMPERIAL_PROMPT_IVORY}}   ${IMPERIAL_THEME_TITLE}"

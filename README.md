@@ -6,6 +6,7 @@ A premium ZSH configuration inspired by the **Imperium of Man** — designed to 
 
 ```
      ⚙⚙⚙  COGITATEUR EN ÉVEIL  ⚙⚙⚙
+     [logo ASCII chargé depuis `assets/ascii/cogitator-logo.txt`]
 
 ╔══════════════════════════════════════╗
 ║   IMPERIAL COMMAND TERMINAL          ║
@@ -43,7 +44,7 @@ A premium ZSH configuration inspired by the **Imperium of Man** — designed to 
 | **Tools** | bat, eza, fzf, zoxide, thefuck, ripgrep, fd, tmux |
 | **Prompt** | Two-line Imperial status rail with git, languages, k8s, docker, cloud |
 | **Theme** | Custom color palette, Nerd Font icons, transient prompt |
-| **Startup** | Rituel d'éveil — litanies, prières à l'Omnissiah, Credo Imperialis |
+| **Startup** | Rituel d'éveil — bannière, logo ASCII, litanies, prières à l'Omnissiah, Credo Imperialis |
 
 ### Visual Identity
 
@@ -77,10 +78,11 @@ A premium ZSH configuration inspired by the **Imperium of Man** — designed to 
 À chaque ouverture de terminal, le **rituel d'éveil du cogitateur** s'affiche :
 
 1. **Bannière Adeptus Mechanicus** — statut de l'Esprit de la Machine, niveau d'accès
-2. **Litane complète aléatoire** — parmi 8 litanie sacrées (Éveil, Mise à Feu, Réparation, Purification, Bolter, Tech-Prêtre, Cantique Binaire, Grande Litanie)
-3. **GLOIRE À L'OMNIMESSIE** — invocation bilingue
-4. **Credo Imperialis** — citation aléatoire du lore 40k
-5. **Confirmation** — le terminal est consacré et prêt
+2. **Logo cogitator ASCII** — chargé depuis `assets/ascii/cogitator-logo.txt`
+3. **Litane complète aléatoire** — parmi 8 litanie sacrées (Éveil, Mise à Feu, Réparation, Purification, Bolter, Tech-Prêtre, Cantique Binaire, Grande Litanie)
+4. **GLOIRE À L'OMNIMESSIE** — invocation bilingue
+5. **Credo Imperialis** — citation aléatoire du lore 40k
+6. **Confirmation** — le terminal est consacré et prêt
 
 Commandes pour rejouer le rituel :
 
@@ -291,7 +293,7 @@ zsh-warhammer40k/
 │   ├── history.zsh              # History & search bindings
 │   └── syntax-highlighting.zsh  # Fast-syntax-highlighting colors
 ├── assets/ascii/
-│   ├── terminal-mockup.txt      # ASCII preview
+│   ├── cogitator-logo.txt       # ASCII logo used by the startup banner
 │   ├── terminal-mockup.txt      # ASCII preview
 │   ├── motd-quotes.txt          # Imperial quotes (Credo)
 │   └── litanies.txt             # Machine Spirit prayers (FR/EN)
